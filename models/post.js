@@ -15,7 +15,8 @@ const postSchema = new Schema({
         required: true
     },
     creator: {
-        type: Object,
+        type: Schema.Types.ObjectID,
+        ref: 'User',
         required: true
     }
 }, { timestamps: true });//Mongoose will add timestamp when a new Object will be added to the database

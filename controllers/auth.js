@@ -1,5 +1,6 @@
 const { validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');//For creating json web token for rest api
 
 const User = require('../models/user');
 
@@ -49,7 +50,7 @@ exports.login = (req, res, next) => {
                 throw error;
             }
             loadedUser = user;
-            return bcrypt.compare(password, user.password);
+            return bcrypt.compare(password, user.password);// matching encrypted password
         })
         .then( isEqual => {
             if (!isEqual) {
@@ -57,7 +58,13 @@ exports.login = (req, res, next) => {
                 error.statusCode = 401;
                 throw error;
             }
+            //Creating web token
+            const token = jwt.sign({
+                email: loadedUser.email,//Just adding some combination for more excription
+                userId: loadedUser._id.toString()
+            }, 'mysupersecret', { expiresIn: '1h' });//a signing key from server
 
+            res.status(200).json({ token, userId: loadedUser._id.toString() });
         })
         .catch( err => {
             if (!err.statusCode) {

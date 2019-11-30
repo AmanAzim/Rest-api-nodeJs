@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const path = require('path');
 const multer = require('multer');
 const uuidv4 = require('uuid/v4');//for multer
+var cors = require('cors');
 
 const feedRoute = require('./routes/feed');
 const authRoute = require('./routes/auth');
@@ -40,9 +41,17 @@ app.use('/images', express.static(path.join(__dirname, 'images')));
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE');
-    res.setHeader('Access-Control-Allow-Header', 'Content-Type, Authorization');
+    res.setHeader('Access-Control-Allow-Header', 'Access-Control-Allow-Headers, Content-Type, Authorization');
     next();
 });
+//enables cors// upper middleware is redundent
+app.use(cors({
+  'allowedHeaders': ['sessionId', 'Content-Type', 'Authorization'],
+  'exposedHeaders': ['sessionId'],
+  'origin': '*',
+  'methods': 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  'preflightContinue': false
+}));
 
 app.use('/feed', feedRoute);
 app.use('/auth', authRoute);
